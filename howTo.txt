@@ -1,0 +1,80 @@
+add postgres support to qt project, how to?
+Чтобы добавить поддержку PostgreSQL в проект на Qt, вам нужно выполнить два основных условия: подключить модуль SQL в файле проекта и обеспечить наличие драйвера PostgreSQL в системе (и в папке с приложением при деплое). 
+Qt Forum
+Qt Forum
+ +2
+1. Подключение модуля в проекте
+Для использования классов баз данных (таких как QSqlDatabase) необходимо добавить модуль sql в файл конфигурации проекта: 
+Для qmake (.pro файл):
+pro
+QT += sql
+Используйте код с осторожностью.
+
+Для CMake (CMakeLists.txt):
+cmake
+find_package(Qt6 REQUIRED COMPONENTS Sql)
+target_link_libraries(mytarget PRIVATE Qt6::Sql)
+Используйте код с осторожностью.
+
+ 
+2. Настройка драйвера QPSQL
+Qt использует плагины-драйверы для связи с СУБД. Драйвер для PostgreSQL называется QPSQL. 
+Qt Documentation
+Qt Documentation
+ +1
+Проверка наличия: В коде можно проверить доступные драйверы: qDebug() << QSqlDatabase::drivers();.
+Если драйвера нет: В бинарных сборках Qt для Windows и macOS драйвер QPSQL обычно идет в комплекте, но требует наличия клиентских библиотек PostgreSQL (libpq.dll на Windows, libpq.dylib на macOS) в системном пути PATH.
+Linux: Обычно достаточно установить пакет разработчика:
+bash
+sudo apt-get install libpq-dev  # Для Ubuntu/Debian
+Используйте код с осторожностью.
+
+ 
+Qt Forum
+Qt Forum
+ +4
+3. Пример подключения к базе данных в C++
+После настройки проекта используйте следующий код для установки соединения: 
+Qt Forum
+Qt Forum
+ +2
+cpp
+#include <QSqlDatabase>
+#include <QSqlError>
+#include <QDebug>
+
+void connectToPostgres() {
+    // 1. Создаем объект базы данных с драйвером QPSQL
+    QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
+
+    // 2. Указываем параметры подключения
+    db.setHostName("localhost");      // Адрес сервера
+    db.setDatabaseName("my_db_name"); // Имя базы
+    db.setUserName("postgres");       // Логин
+    db.setPassword("your_password");  // Пароль
+    db.setPort(5432);                 // Стандартный порт 5432
+
+    // 3. Пытаемся открыть соединение
+    if (!db.open()) {
+        qDebug() << "Ошибка подключения:" << db.lastError().text();
+    } else {
+        qDebug() << "Успешное подключение к PostgreSQL!";
+    }
+}
+Используйте код с осторожностью.
+
+4. Решение проблем («Driver not loaded»)
+Если вы видите ошибку QSqlDatabase: QPSQL driver not loaded, это чаще всего означает, что Qt нашел файл плагина, но не смог загрузить его зависимости (клиентские библиотеки PostgreSQL). 
+Qt Forum
+Qt Forum
+ +2
+На Windows: Скопируйте libpq.dll (и сопутствующие libcrypto-*.dll, libssl-*.dll, libintl-*.dll из папки bin установленного PostgreSQL) в папку с вашим .exe файлом.
+Разрядность: Убедитесь, что разрядность Qt (32 или 64 бита) совпадает с разрядностью библиотек PostgreSQL, которые вы используете. 
+Qt Forum
+Qt Forum
+ +4
+Хотите узнать, как правильно собрать драйвер вручную, если он отсутствует в вашей версии Qt?
+
+
+
+
