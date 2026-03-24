@@ -29,6 +29,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         src/timestamp_reader.cpp
         inc/tcpServer.h
         src/tcpServer.cpp
+        inc/rapidcsv.h
 
     )
 # Define target properties for Android with Qt 6 as:

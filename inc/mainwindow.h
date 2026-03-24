@@ -16,7 +16,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    MainWindow(QString fn, QWidget *parent = nullptr);
     ~MainWindow();
     void startButtonClick();
     void stopButtonClick();

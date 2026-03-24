@@ -1,12 +1,12 @@
 #include "mainwindow.h"
 #include "../forms/ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(QString fn, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , tmr(new QTimer())
-    , tsr(new ts_reader())
-    , tcp(new tcpServer())
+    , tmr(new QTimer(this))
+    , tsr(new ts_reader(fn, this))
+    , tcp(new tcpServer(this))
     , secCounter(0)
 {
     ui->setupUi(this);
@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    connect(this->tsr->getTimer(), &QTimer::timeout, this, &MainWindow::setTimerLabel);
     tmr->setInterval(1000);
     connect(tmr, &QTimer::timeout, this, &MainWindow::setTimerLabel);
-    connect(tmr, &QTimer::timeout, tsr, &ts_reader::handleTimerSignal);
+//    connect(tmr, &QTimer::timeout, tsr, &ts_reader::handleTimerSignal);
 }
 
 MainWindow::~MainWindow()
@@ -25,11 +25,12 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::startButtonClick(){
-//    tsr->start_ts();
+    qDebug() << "MainWindow::startButtonClick()";
+    tsr->start_ts();
     tmr->start();
 }
 void MainWindow::stopButtonClick(){
-//    tsr->stop_ts();
+    tsr->stop_ts();
     tmr->stop();
 }
 void MainWindow::closeButtonClick(){}
@@ -48,4 +49,20 @@ void MainWindow::setTimerLabel(){
 
     // Update the UI
     ui->time_label->setText(formattedTime);
+
+    QVector<QString> curr = tsr->get_values();
+    if(curr.size() >= 8){
+        ui->probe_0->setText(curr[0]);
+        ui->probe_1->setText(curr[1]);
+        ui->probe_2->setText(curr[2]);
+        ui->probe_3->setText(curr[3]);
+        ui->probe_4->setText(curr[4]);
+        ui->probe_5->setText(curr[5]);
+        ui->probe_6->setText(curr[6]);
+        ui->probe_7->setText(curr[7]);
+    }
+    curr = tsr->get_valuesSQL();
+    qDebug() << "Values from PGSQL: " << curr[0] << "  " << curr[1] << "  "
+             << curr[2] << "  " << curr[3] << "  " << curr[4] << "  " << curr[5] << "  "
+             << curr[6] << "  " << curr[7];
 }
