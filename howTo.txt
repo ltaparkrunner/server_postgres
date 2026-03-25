@@ -76,5 +76,330 @@ Qt Forum
 Хотите узнать, как правильно собрать драйвер вручную, если он отсутствует в вашей версии Qt?
 
 
+cpp
+#include <QCoreApplication>
+#include <QTcpServer>
+#include <QTcpSocket>
+#include <QDataStream>
+
+class ModbusServer : public QTcpServer {
+public:
+    ModbusServer() {
+        if (listen(QHostAddress::Any, 502)) {
+            qDebug() << "Server started on port 502";
+        }
+    }
+
+protected:
+    void incomingConnection(qintptr socketDescriptor) override {
+        QTcpSocket *socket = new QTcpSocket(this);
+        socket->setSocketDescriptor(socketDescriptor);
+
+        connect(socket, &QTcpSocket::readyRead, [socket]() {
+            QByteArray request = socket->readAll();
+            if (request.size() < 7) return; // Минимум для MBAP заголовка
+
+            // Данные для ответа (8 значений по 16 бит)
+            uint16_t values[8] = {10, 20, 30, 40, 50, 60, 70, 80};
+
+            QByteArray response;
+            QDataStream out(&response, QIODevice::WriteOnly);
+            out.setByteOrder(QDataStream::BigEndian);
+
+            // 1. MBAP Header
+            out << (uint16_t)0x0001;      // Transaction ID (копируем из запроса обычно)
+            out << (uint16_t)0x0000;      // Protocol ID (всегда 0 для Modbus)
+            out << (uint16_t)(2 + 1 + 16); // Length (Unit ID + FC + Data)
+            out << (uint8_t)0x01;         // Unit ID
+
+            // 2. Modbus PDU
+            out << (uint8_t)0x03;         // Function Code (Read Holding Registers)
+            out << (uint8_t)16;           // Byte Count (8 регистров * 2 байта)
+            
+            for(int i = 0; i < 8; ++i) {
+                out << values[i];         // Сами данные
+            }
+
+            socket->write(response);
+        });
+
+        connect(socket, &QTcpSocket::disconnected, socket, &QTcpSocket::deleteLater);
+    }
+};
+
+int main(int argc, char *argv[]) {
+    QCoreApplication a(argc, argv);
+    ModbusServer server;
+    return a.exec();
+}
+Используйте код с осторожностью.
+
+Ключевые моменты:
+Порядок байтов: Modbus использует Big-Endian, поэтому QDataStream::BigEndian обязателен.
+Структура ответа:
+Первые 6 байт — заголовок.
+7-й байт — Unit ID.
+8-й байт — Код функции (0x03 для чтения регистров).
+9-й байт — Количество байт данных (в нашем случае 16).
+Далее — 8 ваших значений.
+Порт: Стандартный Modbus порт — 502. В Linux для его запуска могут потребоваться права sudo.
+
+
+
+
+
+
+
+Основной код (main.cpp)
+cpp
+#include <QCoreApplication>
+#include <QTcpServer>
+#include <QTcpSocket>
+#include <QDataStream>
+
+class ModbusServer : public QTcpServer {
+public:
+    ModbusServer() {
+        if (listen(QHostAddress::Any, 502)) {
+            qDebug() << "Server started on port 502";
+        }
+    }
+
+protected:
+    void incomingConnection(qintptr socketDescriptor) override {
+        QTcpSocket *socket = new QTcpSocket(this);
+        socket->setSocketDescriptor(socketDescriptor);
+
+        connect(socket, &QTcpSocket::readyRead, [socket]() {
+            QByteArray request = socket->readAll();
+            if (request.size() < 7) return; // Минимум для MBAP заголовка
+
+            // Данные для ответа (8 значений по 16 бит)
+            uint16_t values[8] = {10, 20, 30, 40, 50, 60, 70, 80};
+
+            QByteArray response;
+            QDataStream out(&response, QIODevice::WriteOnly);
+            out.setByteOrder(QDataStream::BigEndian);
+
+            // 1. MBAP Header
+            out << (uint16_t)0x0001;      // Transaction ID (копируем из запроса обычно)
+            out << (uint16_t)0x0000;      // Protocol ID (всегда 0 для Modbus)
+            out << (uint16_t)(2 + 1 + 16); // Length (Unit ID + FC + Data)
+            out << (uint8_t)0x01;         // Unit ID
+
+            // 2. Modbus PDU
+            out << (uint8_t)0x03;         // Function Code (Read Holding Registers)
+            out << (uint8_t)16;           // Byte Count (8 регистров * 2 байта)
+            
+            for(int i = 0; i < 8; ++i) {
+                out << values[i];         // Сами данные
+            }
+
+            socket->write(response);
+        });
+
+        connect(socket, &QTcpSocket::disconnected, socket, &QTcpSocket::deleteLater);
+    }
+};
+
+int main(int argc, char *argv[]) {
+    QCoreApplication a(argc, argv);
+    ModbusServer server;
+    return a.exec();
+}
+Используйте код с осторожностью.
+
+Ключевые моменты:
+Порядок байтов: Modbus использует Big-Endian, поэтому QDataStream::BigEndian обязателен.
+Структура ответа:
+Первые 6 байт — заголовок.
+7-й байт — Unit ID.
+8-й байт — Код функции (0x03 для чтения регистров).
+9-й байт — Количество байт данных (в нашем случае 16).
+Далее — 8 ваших значений.
+Порт: Стандартный Modbus порт — 502. В Linux для его запуска могут потребоваться права sudo.
+Нужно ли добавить в код парсинг входящего запроса, чтобы сервер отвечал только на конкретные адреса регистров?
+
+
+
+
+
+
+1 сайт
+Протокол Modbus - Быстрые Проекты
+Сеть TCP/IP состоит из Клиента, подключенного к сетевому коммутатору (коммутаторам), к которому также подключены все Серверы в сет...
+
+fast-project.ru
+
+Thank you.
+Всегда рад помочь! Этот пример — отличная база для создания промышленного симулятора или шлюза.
+Если планируете развивать проект дальше, стоит рассмотреть использование официального модуля Qt Modbus (QModbusTcpServer), который берет на себя всю работу с протоколом, проверку контрольных сумм и управление таблицами данных (Coils, Discrete Inputs, Holding Registers).
+Нужно ли подготовить пример реализации через стандартный модуль Qt Modbus, чтобы не собирать пакеты вручную?
+
+
+
+
+go ahead
+Использование встроенного модуля QModbusTcpServer — это более правильный путь для серьезных проектов, так как он сам следит за корректностью протокола.
+Для начала добавьте в .pro файл:
+pro
+QT += modbus serialbus
+Используйте код с осторожностью.
+
+Пример сервера на базе QModbusTcpServer
+Этот код создает стандартную карту данных и заполняет 8 регистров (Holding Registers), к которым клиент сможет обращаться по адресу 0.
+cpp
+#include <QCoreApplication>
+#include <QModbusTcpServer>
+#include <QModbusDataUnit>
+#include <QDebug>
+
+int main(int argc, char *argv[]) {
+    QCoreApplication a(argc, argv);
+
+    QModbusTcpServer *slave = new QModbusTcpServer(&a);
+    
+    // 1. Настраиваем адрес (localhost:502)
+    slave->setConnectionParameter(QModbusDevice::NetworkPortParameter, 502);
+    slave->setConnectionParameter(QModbusDevice::NetworkAddressParameter, "127.0.0.1");
+
+    // 2. Создаем карту данных (Holding Registers, начинаем с 0, всего 8 штук)
+    QModbusDataUnitMap reg;
+    reg.insert(QModbusDataUnit::HoldingRegisters, { QModbusDataUnit::HoldingRegisters, 0, 8 });
+    slave->setMap(reg);
+
+    // 3. Заполняем регистры начальными данными
+    for (int i = 0; i < 8; ++i) {
+        // Устанавливаем значение (тип данных, индекс, значение)
+        slave->setData(QModbusDataUnit::HoldingRegisters, i, 100 + i);
+    }
+
+    // 4. Запускаем сервер
+    if (!slave->connectDevice()) {
+        qDebug() << "Connect failed:" << slave->errorString();
+    } else {
+        qDebug() << "Modbus TCP Server started on port 502";
+    }
+
+    // Опционально: следим за изменением данных клиентом
+    QObject::connect(slave, &QModbusTcpServer::dataWritten, [](QModbusDataUnit::RegisterType table, int address, int size) {
+        qDebug() << "Client wrote to" << table << "at" << address << "size" << size;
+    });
+
+    return a.exec();
+}
+Используйте код с осторожностью.
+
+Почему это лучше:
+Автоматизация: Вам не нужно вручную считать байты в заголовке или проверять целостность пакета.
+Гибкость: Вы можете легко добавить другие типы данных (Coils, Discrete Inputs) через QModbusDataUnitMap.
+События: Сигнал dataWritten мгновенно сообщит, если клиент изменил значения в регистрах.
+Важный нюанс: Если вы работаете в Linux, порт 502 защищен. Для тестов без root-прав лучше использовать порт 1502 или выше.
+Хотите, чтобы я показал, как написать клиента (Master) на Qt для проверки этого сервера?
+
+
+C:\wrk\Qt_projs\server_postgres\src\tcpServer.cpp:16: error: Use of undeclared identifier 'connect'; did you mean 'QAbstractSocket::connect'? (fix available)
+
+
+
+In Qt c++ how can one class get values from another class. Both classes are inside the same upper class.
+В Qt C++ есть три основных способа передать данные между соседними классами внутри одного родителя. Выбор зависит от того, насколько «тесно» они должны быть связаны.
+1. Сигналы и слоты (Самый правильный путь)
+Это стандарт Qt. Объекты ничего не знают друг о друге, их связывает родитель.
+В классе-отправителе: объявите signal (например, sendData(int value)).
+В классе-получателе: объявите slot (например, receiveData(int value)).
+В родительском классе: соедините их через connect(sender, &Sender::sendData, receiver, &Receiver::receiveData);.
+2. Прямой вызов через указатели
+Если родитель хранит указатели на оба объекта, он может передать адрес одного класса другому (через конструктор или сеттер).
+В классе A: создайте метод void setPartner(ClassB *partner).
+Использование: класс A теперь может вызывать partner->getValue(). Это создает сильную связность, что не всегда хорошо, но работает быстро.
+3. Общая модель данных (Mediator)
+Если данных много, лучше вынести их в отдельный объект (например, наследник QObject или QAbstractItemModel).
+Родитель создает один экземпляр DataModel.
+Передает указатель на эту модель обоим дочерним классам.
+Оба класса читают и пишут в одну и ту же область памяти.
+Какой способ выбрать?
+Если нужно реагировать на событие (клик, изменение текста) — используйте сигналы и слоты.
+Если это фоновые данные, к которым нужен постоянный доступ — используйте общую модель.
+Хотите посмотреть пример кода для связи через сигналы и слоты или через указатели?
+
+
+
+
+more about the mediator with example
+Паттерн Mediator (Посредник) в контексте Qt C++ используется для того, чтобы избавить соседние классы от прямой зависимости друг от друга. Вместо того чтобы «Брат» знал о существовании «Сестры», оба они общаются только с «Посредником». 
+Medium
+Medium
+ +2
+В Qt роль такого посредника чаще всего берет на себя родительский класс (Upper Class), так как он уже владеет обоими объектами. 
+Refactoring.Guru
+Refactoring.Guru
+Как это работает (алгоритм)
+Дочерние классы ничего не знают друг о друге. Они только сообщают о событиях («Я изменил значение») через свои сигналы.
+Родительский класс (Посредник) подписывается на эти сигналы.
+Когда сигнал приходит, родитель сам решает, что делать: вызвать метод у другого класса, изменить общие данные или передать значение дальше. 
+Stack Overflow
+Stack Overflow
+ +2
+Пример реализации
+Представим, что у нас есть InputClass (поле ввода) и DisplayClass (надпись), которые находятся внутри MainWindow.
+1. Дочерний класс №1 (Отправитель)
+cpp
+// inputclass.h
+class InputClass : public QObject {
+    Q_OBJECT
+signals:
+    void valueUpdated(const QString &newValue); // Просто уведомляем: "что-то изменилось"
+};
+Используйте код с осторожностью.
+
+2. Дочерний класс №2 (Получатель)
+cpp
+// displayclass.h
+class DisplayClass : public QObject {
+    Q_OBJECT
+public slots:
+    void showText(const QString &text) { 
+        // Логика отображения
+    }
+};
+Используйте код с осторожностью.
+
+3. Родительский класс (Mediator)
+Именно здесь происходит «магия» связи. Родитель знает об обоих, но они друг о друге — нет. 
+cpp
+// mainwindow.cpp
+MainWindow::MainWindow() {
+    inputObj = new InputClass(this);
+    displayObj = new DisplayClass(this);
+
+    // Связываем их через посредника (MainWindow)
+    connect(inputObj, &InputClass::valueUpdated, 
+            displayObj, &DisplayClass::showText);
+}
+Используйте код с осторожностью.
+
+Почему это удобно?
+Слабая связность: Вы можете полностью заменить DisplayClass на другой (например, на логгер в файл), и вам не придется менять ни строчки кода в InputClass.
+Централизация: Вся логика взаимодействия сосредоточена в одном месте — в родителе.
+Тестирование: Каждый класс можно тестировать отдельно от остальных. 
+Vishal Chovatiya
+Vishal Chovatiya
+ +3
+Вариант с «Умным» посредником:
+Если логика сложная (например, данные нужно обработать перед передачей), родитель может использовать промежуточный слот:
+cpp
+connect(inputObj, &InputClass::valueUpdated, this, &MainWindow::onDataReceived);
+
+void MainWindow::onDataReceived(const QString &data) {
+    QString processed = data.toUpper(); // Обработка данных посредником
+    displayObj->showText(processed);    // Передача результата
+}
+Используйте код с осторожностью.
+
+Хотите разобрать, как сделать такой обмен данными через общую структуру (Model), чтобы не плодить десятки сигналов?
+В ответах искусственного интеллекта могут быть ошибки. Если вам требуется юридическая консультация, обратитесь к специалисту. Подробнее
+
+
 
 

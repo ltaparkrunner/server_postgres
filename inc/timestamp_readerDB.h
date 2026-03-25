@@ -27,8 +27,9 @@ public:
     QSqlTableModel* init_table(QObject *parent = nullptr);
 
     QSqlTableModel* init2();
+signals:
+    void wasChanged(QVector<QString> vs);
 private:
-
     QSqlTableModel *model;
     QTimer *tm1;
 

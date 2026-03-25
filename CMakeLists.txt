@@ -9,8 +9,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Sql Network)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql Network)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Sql Network) # Modbus SerialBus)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql Network) #  Modbus SerialBus)
 
 #set(CMAKE_AUTOUIC ON)
 #set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -55,6 +55,7 @@ endif()
 target_include_directories(${PROJECT_NAME} PRIVATE inc)
 target_link_libraries(server_postgres PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Sql Qt${QT_VERSION_MAJOR}::Network)
+#    Qt${QT_VERSION_MAJOR}::Modbus Qt${QT_VERSION_MAJOR}::SerialBus)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
