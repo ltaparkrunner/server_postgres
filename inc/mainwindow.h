@@ -2,7 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+
+#ifdef TXT
 #include "timestamp_reader.h"
+#else
+#include "timestamp_readerDB.h"
+#endif
 #include "tcpServer.h"
 
 QT_BEGIN_NAMESPACE
@@ -27,7 +32,11 @@ private:
     Ui::MainWindow *ui;
     QTimer *tmr;
 public:
+#ifdef TXT
     ts_reader *tsr;
+#else
+    ts_readerDB *tsr;
+#endif
 private:
     tcpServer *tcp;
     int secCounter;
