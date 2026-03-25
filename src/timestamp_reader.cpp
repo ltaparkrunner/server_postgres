@@ -5,10 +5,10 @@ ts_reader::ts_reader(QString &fn, QObject *parent)
 ,   tm1(new QTimer(this))
 //,   fname(new QString(fn))  // here to move not to copy? how to check?
 ,   currRow(0)
-,   currRowSQL(0)
+//,   currRowSQL(0)
 {  // why doesn't work this pointer in new QTimer(/*this*/)?
     connect(tm1, &QTimer::timeout, this, &ts_reader::readString);
-    connect(tm1, &QTimer::timeout, this, &ts_reader::readStringSQL);
+//    connect(tm1, &QTimer::timeout, this, &ts_reader::readStringSQL);
     tm1->setInterval(1000);
     QFile file(fn);
     if (!file.exists()) {
@@ -23,7 +23,7 @@ ts_reader::ts_reader(QString &fn, QObject *parent)
     maxRow = doc->GetRowCount();
     qDebug() << "The number of rows is " << maxRow;
     curValue = doc->GetRow<std::string>(currRow);
-    connectToPostgres();
+//    connectToPostgres();
 //    maxRowSQL =
 }
 
@@ -38,6 +38,7 @@ QVector<QString> ts_reader::get_values(){
     return vstr;
 }
 
+/*
 QVector<QString> ts_reader::get_valuesSQL(){
     QVector<QString> vstr; //{"10", "20", "30", "40", "50", "60", "70", "80"};
 //    qDebug() << "curValueSQL.count()" << curValueSQL.count() << "currRow" << currRow;
@@ -49,10 +50,12 @@ QVector<QString> ts_reader::get_valuesSQL(){
     }
     return vstr;
 }
+*/
 
 void ts_reader::start_ts(){ tm1->start(); }
 void ts_reader::stop_ts(){ tm1->stop(); }
 
+/*
 void ts_reader::connectToPostgres() {
     // 1. Создаем объект базы данных с драйвером QPSQL
 //    QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
@@ -81,7 +84,7 @@ void ts_reader::connectToPostgres() {
     curValueSQL = model->record(currRowSQL);
     qDebug() << "connectToPostgres curValueSQL.count()" << curValueSQL.count();
 }
-
+*/
 int ts_reader:: readString() {
     if(maxRow > currRow) currRow++;
     curValue = doc->GetRow<std::string>(currRow);
@@ -89,7 +92,7 @@ int ts_reader:: readString() {
 //    std::vector<QString> vec = doc->GetRow<QString>(currRow);
     return 0;
 }
-
+/*
 int ts_reader:: readStringSQL() {
     if(maxRowSQL > currRowSQL) currRowSQL++;
     curValueSQL = model->record(currRowSQL);       //GetRow<std::string>(currRow);
@@ -97,6 +100,7 @@ int ts_reader:: readStringSQL() {
     //    std::vector<QString> vec = doc->GetRow<QString>(currRow);
     return 0;
 }
+*/
 /*
  *
 cpp
