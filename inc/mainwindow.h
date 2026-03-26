@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #define TXT
 #ifdef TXT
-#include "timestamp_reader.h"
+#include "timestamp_readerCSV.h"
 #else
 #include "timestamp_readerDB.h"
 #endif

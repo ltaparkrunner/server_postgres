@@ -36,7 +36,7 @@ void tcpServer::incomingConnection(qintptr socketDescriptor){
             request[4] == 0 && request[5] == 6 && request[6] == 33 && request[7] == 3 &&
             request[8] == 0 && request[9] == 0 && request[10] == 0 && request[11] == 16)
             send_mklp_data_time(request, response);
-//            ;
+
         if (request[2] == 0 && request[3] == 0 && request[4] == 0 && request[5] > 0 &&
             request[7] == 0x10 && request[9] == 8 && request[11] == 3)
 //            RTC_Time_Install(request, out);

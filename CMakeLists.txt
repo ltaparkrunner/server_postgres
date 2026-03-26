@@ -25,13 +25,15 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(server_postgres
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        inc/timestamp_reader.h
-        src/timestamp_reader.cpp
+        inc/timestamp_readerCSV.h
+        src/timestamp_readerCSV.cpp
         inc/tcpServer.h
         src/tcpServer.cpp
         inc/rapidcsv.h
         inc/timestamp_readerDB.h
         src/timestamp_readerDB.cpp
+        inc/timestamp_reader.h
+        src/timestamp_reader.cpp
 
     )
 # Define target properties for Android with Qt 6 as:

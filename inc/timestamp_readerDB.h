@@ -12,6 +12,7 @@
 #include <QDebug>
 
 #include <QString>
+#include <QSqlQuery>
 
 class ts_readerDB : public QObject{
     Q_OBJECT
@@ -25,8 +26,7 @@ public:
 
     int readStringDB();
     QSqlTableModel* init_table(QObject *parent = nullptr);
-
-    QSqlTableModel* init2();
+    void getRowByKey(int key);
 signals:
     void wasChanged(QVector<QString> vs);
 private:

@@ -48,6 +48,10 @@ QSqlTableModel* ts_readerDB::init_table(QObject *parent){
     } else {
         qDebug() << "Успешное подключение к PostgreSQL!";
     }
+    getRowByKey(3);
+    getRowByKey(15);
+    getRowByKey(260000);
+
     return new QSqlTableModel(parent, pgdb);
 }
 
@@ -56,4 +60,30 @@ int ts_readerDB:: readStringDB() {
     curValueDB = model->record(currRowDB);       //GetRow<std::string>(currRow);
 //    qDebug() << " curValueDB length = " << curValueDB.count();
     return 0;
+}
+
+void ts_readerDB::getRowByKey(int key) {
+    QSqlQuery query;
+    // Подготавливаем запрос
+    query.prepare("SELECT * FROM Test WHERE row_num = :id");
+    query.bindValue(":id", key);
+
+    if (query.exec()) {
+        if (query.next()) {
+            // Получаем данные по именам столбцов или индексам
+            // QString name = query.value("name").toString();
+            // int age = query.value("age").toInt();
+            if(query.isValid() )
+                for(int i=1; i<9; i++){
+                    qDebug() << " getRowByKey query the row num: " << key << " the index: "
+                             << i << "  " << query.value(i).toString();
+                }
+//            qDebug() << "Найдено:" << name << age;
+            else qDebug() << " query is not valid key: " << key;
+        } else {
+            qDebug() << "Запись не найдена";
+        }
+    } else {
+        qDebug() << "Ошибка запроса:" << query.lastError().text();
+    }
 }
