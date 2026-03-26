@@ -10,11 +10,11 @@
 #include <QString>
 #include "rapidcsv.h"
 
-class ts_reader : public QObject{
+class ts_readerCSV : public QObject{
     Q_OBJECT
 public:
-    explicit ts_reader(QString &fn, QObject *parent = nullptr);
-    ~ts_reader();
+    explicit ts_readerCSV(QString &fn, QObject *parent = nullptr);
+    ~ts_readerCSV();
     QVector<QString> get_values();
 
     void stop_ts();
@@ -23,8 +23,8 @@ public:
     int readString();
 private:
     QTimer *tm1;
-    std::vector<std::string> curValue;
-
+//    std::vector<std::string> curValue;
+    QVector<QString> curValue;
     rapidcsv::Document *doc;
     size_t maxRow;
     size_t currRow;

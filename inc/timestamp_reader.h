@@ -12,13 +12,15 @@ class ts_reader : public QObject{
     Q_OBJECT
 public:
     explicit ts_reader(/*QString &fn, QString &tbln, */ QObject *parent = nullptr);
-    virtual ~ts_reader();
-    virtual QVector<QString> get_values();
+    virtual ~ts_reader() = 0;
+    virtual QVector<QString> get_values() = 0;
 
-    virtual void stop_ts();
-    virtual void start_ts();
+    virtual void start_ts(){ tm1->start(); }
+    virtual void stop_ts(){ tm1->stop(); }
 
-    virtual int readString();
+    virtual int readString() = 0;
+signals:
+    void wasChanged(QVector<QString> vs);
 protected:
     QTimer *tm1;
     QVector<QString> curValue;

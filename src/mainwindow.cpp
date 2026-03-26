@@ -6,7 +6,7 @@ MainWindow::MainWindow(QString fn, QWidget *parent)
     , ui(new Ui::MainWindow)
     , tmr(new QTimer(this))
 #ifdef TXT
-    , tsr(new ts_reader(fn, this))
+    , tsr(new ts_readerCSV(fn, this))
 #else
     , tsr(new ts_readerDB(fn, this))
 #endif

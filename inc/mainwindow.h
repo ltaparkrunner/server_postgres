@@ -33,7 +33,7 @@ private:
     QTimer *tmr;
 public:
 #ifdef TXT
-    ts_reader *tsr;
+    ts_readerCSV *tsr;
 #else
     ts_readerDB *tsr;
 #endif

@@ -123,7 +123,7 @@ void tcpServer::send_settings(QByteArray &request, QDataStream &out){
 void tcpServer::getChanged(QVector<QString>& VS ){
     if(VS.count() < arr_len) return;
     for(int i=0; i<arr_len; i++){
-        QStringList parts = VS[i].split('.');
+        QStringList parts = VS[i].split(',');
         int value = parts.at(0).toInt() * 2;
         if (parts.size() > 1 && !parts.at(1).isEmpty()) {
             value += 1;
