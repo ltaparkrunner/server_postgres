@@ -1,9 +1,6 @@
 #ifndef TIMESTAMP_READERDB_H
 #define TIMESTAMP_READERDB_H
-
-#include <QObject>
-#include <QTimer>
-#include <QVector>
+#include "timestamp_reader.h"
 
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -14,29 +11,19 @@
 #include <QString>
 #include <QSqlQuery>
 
-class ts_readerDB : public QObject{
+class ts_readerDB : public ts_reader{
     Q_OBJECT
 public:
     explicit ts_readerDB(QString &fn, QObject *parent = nullptr);
     ~ts_readerDB();
 
-    QVector<QString> get_valuesDB();
-    void stop_ts();
-    void start_ts();
-
-    int readStringDB();
+    int readString() override;
     QSqlTableModel* init_table(QObject *parent = nullptr);
     void getRowByKey(int key);
 signals:
     void wasChanged(QVector<QString> vs);
 private:
     QSqlTableModel *model;
-    QTimer *tm1;
-
-    QSqlRecord curValueDB;
-
-    size_t currRowDB;
-    size_t maxRowDB;
 };
 
 #endif // TIMESTAMP_READERDB_H

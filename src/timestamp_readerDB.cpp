@@ -1,35 +1,24 @@
 #include "timestamp_readerDB.h"
 
 ts_readerDB::ts_readerDB(QString &fn, QObject *parent)
-    : QObject(parent)
+    : ts_reader(parent)
     ,   model(init_table(this))
-    ,   tm1(new QTimer(this))
-    ,   curValueDB()
-    ,   currRowDB(0)
-    ,   maxRowDB(0)
 {
-    connect(tm1, &QTimer::timeout, this, &ts_readerDB::readStringDB);
+    connect(tm1, &QTimer::timeout, this, &ts_readerDB::readString);
     tm1->setInterval(1000);
     model->setTable("test");
     model->select();
-    maxRowDB = model->rowCount();
-    qDebug() << "Connected to table. Row count:" << maxRowDB;
-    curValueDB = model->record(currRowDB);
-    qDebug() << "connectToPostgres curValueSQL.count()" << curValueDB.count();
+    maxRow = model->rowCount();
+    qDebug() << "Connected to table. Row count:" << maxRow;
+    QSqlRecord sr = model->record(currRow);
+    curValue.clear();
+    for(int i=0; i<8; i++){
+        curValue.append(sr.value(i+1).toString());
+    }
+    qDebug() << "connectToPostgres curValueSQL.count()" << curValue.count();
 }
 
 ts_readerDB::~ts_readerDB(){}
-
-QVector<QString> ts_readerDB::get_valuesDB(){
-    QVector<QString> vstr; //{"10", "20", "30", "40", "50", "60", "70", "80"};
-    for(int i=0; i<8; i++){
-        vstr.append(curValueDB.value(i+1).toString());
-    }
-    return vstr;
-}
-
-void ts_readerDB::start_ts(){ tm1->start(); }
-void ts_readerDB::stop_ts(){ tm1->stop(); }
 
 QSqlTableModel* ts_readerDB::init_table(QObject *parent){
     // 1. Создаем объект базы данных с драйвером QPSQL
@@ -55,10 +44,13 @@ QSqlTableModel* ts_readerDB::init_table(QObject *parent){
     return new QSqlTableModel(parent, pgdb);
 }
 
-int ts_readerDB:: readStringDB() {
-    if(maxRowDB > currRowDB) currRowDB++;
-    curValueDB = model->record(currRowDB);       //GetRow<std::string>(currRow);
-//    qDebug() << " curValueDB length = " << curValueDB.count();
+int ts_readerDB:: readString() {
+    if(maxRow > currRow) currRow++;
+    QSqlRecord sr = model->record(currRow);
+    curValue.clear();
+    for(int i=0; i<8; i++){
+        curValue.append(sr.value(i+1).toString());
+    }
     return 0;
 }
 
@@ -71,14 +63,11 @@ void ts_readerDB::getRowByKey(int key) {
     if (query.exec()) {
         if (query.next()) {
             // Получаем данные по именам столбцов или индексам
-            // QString name = query.value("name").toString();
-            // int age = query.value("age").toInt();
             if(query.isValid() )
                 for(int i=1; i<9; i++){
                     qDebug() << " getRowByKey query the row num: " << key << " the index: "
                              << i << "  " << query.value(i).toString();
                 }
-//            qDebug() << "Найдено:" << name << age;
             else qDebug() << " query is not valid key: " << key;
         } else {
             qDebug() << "Запись не найдена";

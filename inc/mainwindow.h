@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#define TXT
+//#define TXT
 #ifdef TXT
 #include "timestamp_readerCSV.h"
 #else

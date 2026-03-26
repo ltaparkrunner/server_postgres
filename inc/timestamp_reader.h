@@ -12,8 +12,8 @@ class ts_reader : public QObject{
     Q_OBJECT
 public:
     explicit ts_reader(/*QString &fn, QString &tbln, */ QObject *parent = nullptr);
-    virtual ~ts_reader() = 0;
-    virtual QVector<QString> get_values() = 0;
+    virtual ~ts_reader();
+    virtual QVector<QString> get_values();
 
     virtual void start_ts(){ tm1->start(); }
     virtual void stop_ts(){ tm1->stop(); }
@@ -25,8 +25,8 @@ protected:
     QTimer *tm1;
     QVector<QString> curValue;
 
-    size_t maxRow;
     size_t currRow;
+    size_t maxRow;
 };
 
 #endif // TIMESTAMP_READER_H

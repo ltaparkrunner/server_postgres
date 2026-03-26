@@ -1,11 +1,7 @@
 #include "timestamp_readerCSV.h"
 
 ts_readerCSV::ts_readerCSV(QString &fn, QObject *parent)
-    : QObject(parent)
-,   tm1(new QTimer(this))
-//,   fname(new QString(fn))  // here to move not to copy? how to check?
-,   currRow(0)
-//,   currRowSQL(0)
+    : ts_reader(parent)
 {  // why doesn't work this pointer in new QTimer(/*this*/)?
     connect(tm1, &QTimer::timeout, this, &ts_readerCSV::readString);
 //    connect(tm1, &QTimer::timeout, this, &ts_reader::readStringSQL);
@@ -35,64 +31,6 @@ ts_readerCSV::ts_readerCSV(QString &fn, QObject *parent)
 
 ts_readerCSV::~ts_readerCSV(){}
 
-QVector<QString> ts_readerCSV::get_values(){
-    QVector<QString> vstr; //{"10", "20", "30", "40", "50", "60", "70", "80"};
-    qDebug() << "forever_2";
-//    qDebug() << "curValue.size()" << curValue.size() << "currRow" << currRow;
-    for(int i=0; i<8; i++){
-//        vstr.append(QString::fromStdString(curValue[i+1]));
-        vstr.append(curValue[i]);
-    }
-    return vstr;
-}
-
-/*
-QVector<QString> ts_reader::get_valuesSQL(){
-    QVector<QString> vstr; //{"10", "20", "30", "40", "50", "60", "70", "80"};
-//    qDebug() << "curValueSQL.count()" << curValueSQL.count() << "currRow" << currRow;
-    for(int i=0; i<8; i++){
-//        qDebug() << "curValueSQL.value(" << i+1 << ")= " << curValueSQL.value(i+1);
-        // vstr.append(curValueSQL.value("probe1").toString());
-        // vstr.append(curValueSQL.value("probe1").toString());
-        vstr.append(curValueSQL.value(i+1).toString());
-    }
-    return vstr;
-}
-*/
-
-void ts_readerCSV::start_ts(){ tm1->start(); }
-void ts_readerCSV::stop_ts(){ tm1->stop(); }
-
-/*
-void ts_reader::connectToPostgres() {
-    // 1. Создаем объект базы данных с драйвером QPSQL
-//    QSqlDatabase db = QSqlDatabase::addDatabase("QPSQL");
-    pgdb = new QSqlDatabase();
-    *pgdb = QSqlDatabase::addDatabase("QPSQL");
-
-    // 2. Указываем параметры подключения
-    pgdb->setHostName("localhost");      // Адрес сервера
-    pgdb->setDatabaseName("test_1"); // Имя базы
-    pgdb->setUserName("postgres");       // Логин
-    pgdb->setPassword("Forever");  // Пароль
-    pgdb->setPort(5432);                 // Стандартный порт 5432
-
-    // 3. Пытаемся открыть соединение
-    if (!pgdb->open()) {
-        qDebug() << "Ошибка подключения:" << pgdb->lastError().text();
-    } else {
-        qDebug() << "Успешное подключение к PostgreSQL!";
-    }
-
-    model = new QSqlTableModel(nullptr, *pgdb);
-    model->setTable("test");
-    model->select();
-    qDebug() << "Connected to table. Row count:" << model->rowCount();
-    maxRowSQL = model->rowCount();
-    curValueSQL = model->record(currRowSQL);
-    qDebug() << "connectToPostgres curValueSQL.count()" << curValueSQL.count();
-}
-*/
 int ts_readerCSV:: readString() {
     if(maxRow > currRow) currRow++;
     std::vector<std::string> vstr = doc->GetRow<std::string>(currRow);
@@ -107,15 +45,7 @@ int ts_readerCSV:: readString() {
 //    std::vector<QString> vec = doc->GetRow<QString>(currRow);
     return 0;
 }
-/*
-int ts_reader:: readStringSQL() {
-    if(maxRowSQL > currRowSQL) currRowSQL++;
-    curValueSQL = model->record(currRowSQL);       //GetRow<std::string>(currRow);
-//    qDebug() << "curValueSQL.count()" << curValueSQL.count();
-    //    std::vector<QString> vec = doc->GetRow<QString>(currRow);
-    return 0;
-}
-*/
+
 /*
  *
 cpp

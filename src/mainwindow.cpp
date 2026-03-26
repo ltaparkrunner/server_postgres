@@ -34,8 +34,8 @@ void MainWindow::startButtonClick(){
     tmr->start();
 }
 void MainWindow::stopButtonClick(){
-    tsr->stop_ts();
     tmr->stop();
+    tsr->stop_ts();
 }
 void MainWindow::closeButtonClick(){}
 void MainWindow::setTimerLabel(){
@@ -53,11 +53,9 @@ void MainWindow::setTimerLabel(){
 
     // Update the UI
     ui->time_label->setText(formattedTime);
-#ifdef TXT
+
     QVector<QString> curr = tsr->get_values();
-#else
-    QVector<QString> curr = tsr->get_valuesDB();
-#endif
+
     if(curr.size() >= 8){
         ui->probe_0->setText(curr[0]);
         ui->probe_1->setText(curr[1]);
@@ -68,8 +66,4 @@ void MainWindow::setTimerLabel(){
         ui->probe_6->setText(curr[6]);
         ui->probe_7->setText(curr[7]);
     }
-    // curr = tsr->get_valuesSQL();
-    // qDebug() << "Values from PGSQL: " << curr[0] << "  " << curr[1] << "  "
-    //          << curr[2] << "  " << curr[3] << "  " << curr[4] << "  " << curr[5] << "  "
-    //          << curr[6] << "  " << curr[7];
 }
