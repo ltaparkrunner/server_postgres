@@ -19,8 +19,10 @@ public:
     virtual void stop_ts(){ tm1->stop(); }
 
     virtual int readString() = 0;
+    virtual int getMaxIndex() = 0;
 signals:
-    void wasChanged(QVector<QString> vs);
+    void wasChanged(QVector<QString>& vs);
+    void reached_end();
 protected:
     QTimer *tm1;
     QVector<QString> curValue;

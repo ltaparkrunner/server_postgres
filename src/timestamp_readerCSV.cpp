@@ -4,7 +4,6 @@ ts_readerCSV::ts_readerCSV(QString &fn, QObject *parent)
     : ts_reader(parent)
 {  // why doesn't work this pointer in new QTimer(/*this*/)?
     connect(tm1, &QTimer::timeout, this, &ts_readerCSV::readString);
-//    connect(tm1, &QTimer::timeout, this, &ts_reader::readStringSQL);
     tm1->setInterval(1000);
     QFile file(fn);
     if (!file.exists()) {
@@ -14,19 +13,15 @@ ts_readerCSV::ts_readerCSV(QString &fn, QObject *parent)
     }
     rapidcsv::SeparatorParams sepParams(';');
     rapidcsv::LabelParams labelParams(-1, -1);
-//    rapidcsv::Document doc(fn.toStdString(), labelParams, sepParams);
+
     doc = new rapidcsv::Document{fn.toStdString(), labelParams, sepParams};
     maxRow = doc->GetRowCount();
-    qDebug() << "The number of rows is " << maxRow;
-    // curValue = doc->GetRow<std::string>(currRow);
+//    qDebug() << "The number of rows is " << maxRow;
     std::vector<std::string> vstr = doc->GetRow<std::string>(currRow);
     curValue.clear();
     for(int i=0; i<8; i++){
         curValue.append(QString::fromStdString(vstr[i+1]));
-//        vstr.append(curValue[i+1]);
     }
-//    connectToPostgres();
-//    maxRowSQL =
 }
 
 ts_readerCSV::~ts_readerCSV(){}
@@ -34,15 +29,11 @@ ts_readerCSV::~ts_readerCSV(){}
 int ts_readerCSV:: readString() {
     if(maxRow > currRow) currRow++;
     std::vector<std::string> vstr = doc->GetRow<std::string>(currRow);
-    qDebug() << "forever_1";
+//    qDebug() << "forever_1";
     curValue.clear();
     for(int i=0; i<8; i++){
         curValue.append(QString::fromStdString(vstr[i+1]));
-        //        vstr.append(curValue[i+1]);
     }
-//    curValue = doc->GetRow<std::string>(currRow);
-//    qDebug() << "curValue.size()" << curValue.size();
-//    std::vector<QString> vec = doc->GetRow<QString>(currRow);
     return 0;
 }
 

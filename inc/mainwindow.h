@@ -3,11 +3,12 @@
 
 #include <QMainWindow>
 //#define TXT
-#ifdef TXT
+//#ifdef TXT
 #include "timestamp_readerCSV.h"
-#else
+//#else
 #include "timestamp_readerDB.h"
-#endif
+//#endif
+#include <params_watch.h>
 #include "tcpServer.h"
 
 QT_BEGIN_NAMESPACE
@@ -21,23 +22,22 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QString fn, QWidget *parent = nullptr);
+    MainWindow(QString testn, QString paramsfn, QWidget *parent = nullptr);
     ~MainWindow();
     void startButtonClick();
     void stopButtonClick();
     void closeButtonClick();
     void setTimerLabel();
-
+    void reached_end();
 private:
     Ui::MainWindow *ui;
     QTimer *tmr;
 public:
-#ifdef TXT
-    ts_readerCSV *tsr;
-#else
+//    ts_readerCSV *tsr;
     ts_readerDB *tsr;
-#endif
 private:
+    watch_t watch;
+    params prm;
     tcpServer *tcp;
     int secCounter;
 };

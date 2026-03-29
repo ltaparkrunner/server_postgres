@@ -19,11 +19,12 @@ public:
 
     int readString() override;
     QSqlTableModel* init_table(QObject *parent = nullptr);
-    void getRowByKey(int key);
-signals:
-    void wasChanged(QVector<QString> vs);
+    bool getRowByKey(int key);
+    int getMaxIndex() override;
+// signals:
+//     void wasChanged(QVector<QString> vs);
 private:
-    QSqlTableModel *model;
+//    QSqlTableModel *model;
 };
 
 #endif // TIMESTAMP_READERDB_H

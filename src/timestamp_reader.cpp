@@ -3,10 +3,12 @@
 ts_reader::ts_reader(/*QString &fn, QString &tbln, */ QObject *parent)
     : QObject(parent)
     ,   tm1(new QTimer(this))
-    ,   curValue ()
+    ,   curValue ({ "490", "490", "490", "490", "490", "490", "490", "490" })
     ,   currRow(0)
     ,   maxRow(0)
-{}
+{
+    qDebug() << "ts_reader::ts_reader Constructor";
+}
 
 ts_reader::~ts_reader() {
     delete tm1;

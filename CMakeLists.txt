@@ -34,6 +34,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         src/timestamp_readerDB.cpp
         inc/timestamp_reader.h
         src/timestamp_reader.cpp
+        inc/params_watch.h
+        src/params_watch.cpp
 
     )
 # Define target properties for Android with Qt 6 as:

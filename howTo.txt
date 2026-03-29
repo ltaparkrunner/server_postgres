@@ -402,4 +402,8 @@ void MainWindow::onDataReceived(const QString &data) {
 
 
 
+h  m  s           dd mm yy
+25,26,27 - time  ,28,29,30 - date
 
+to add lines reading from PostgreSQL.
+qss-stock/

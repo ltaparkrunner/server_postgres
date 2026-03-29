@@ -1,16 +1,18 @@
 #include "mainwindow.h"
 #include "../forms/ui_mainwindow.h"
 
-MainWindow::MainWindow(QString fn, QWidget *parent)
+MainWindow::MainWindow(QString testn, QString paramsfn, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , tmr(new QTimer(this))
-#ifdef TXT
-    , tsr(new ts_readerCSV(fn, this))
-#else
-    , tsr(new ts_readerDB(fn, this))
-#endif
-    , tcp(new tcpServer(this))
+
+//    , tsr(new ts_readerCSV(fn, this))
+
+    , tsr(new ts_readerDB(testn, this))
+    , watch()
+//    , prm({paramsfn})
+    , prm({paramsfn})
+    , tcp(new tcpServer(watch, prm, this))
     , secCounter(0)
 {
     ui->setupUi(this);
@@ -21,6 +23,8 @@ MainWindow::MainWindow(QString fn, QWidget *parent)
     tmr->setInterval(1000);
     connect(tmr, &QTimer::timeout, this, &MainWindow::setTimerLabel);
 //    connect(tmr, &QTimer::timeout, tsr, &ts_reader::handleTimerSignal);
+    connect(tsr, &ts_reader::wasChanged, tcp, &tcpServer::getChanged);
+    connect(tsr, &ts_reader::reached_end, &ts_reader::reached_end);
 }
 
 MainWindow::~MainWindow()
@@ -66,4 +70,9 @@ void MainWindow::setTimerLabel(){
         ui->probe_6->setText(curr[6]);
         ui->probe_7->setText(curr[7]);
     }
+}
+
+void MainWindow::reached_end(){
+    tmr->stop();
+    tsr->stop_ts();
 }
