@@ -16,11 +16,10 @@ class ts_readerDB : public ts_reader{
 public:
     explicit ts_readerDB(QString &fn, QObject *parent = nullptr);
     ~ts_readerDB();
-
+    int getMaxIndex() override;
     int readString() override;
     QSqlTableModel* init_table(QObject *parent = nullptr);
     bool getRowByKey(int key);
-    int getMaxIndex() override;
 // signals:
 //     void wasChanged(QVector<QString> vs);
 private:

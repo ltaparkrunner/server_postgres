@@ -4,6 +4,7 @@
 MainWindow::MainWindow(QString testn, QString paramsfn, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , rtc(new QTimer(this))
     , tmr(new QTimer(this))
 
 //    , tsr(new ts_readerCSV(fn, this))
@@ -16,15 +17,20 @@ MainWindow::MainWindow(QString testn, QString paramsfn, QWidget *parent)
     , secCounter(0)
 {
     ui->setupUi(this);
+    QDateTime now = watch.get_watch();
+    ui->RTC_label->setText(now.toString("dd.MM.yyyy hh:mm:ss"));
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::startButtonClick);
     connect(ui->stopButton, &QPushButton::clicked, this, &MainWindow::stopButtonClick);
     connect(ui->closeButton, &QPushButton::clicked, this, &MainWindow::closeButtonClick);
 //    connect(this->tsr->getTimer(), &QTimer::timeout, this, &MainWindow::setTimerLabel);
+    rtc->setInterval(1000);
     tmr->setInterval(1000);
+    connect(rtc, &QTimer::timeout, this, &MainWindow::setRTC);
     connect(tmr, &QTimer::timeout, this, &MainWindow::setTimerLabel);
 //    connect(tmr, &QTimer::timeout, tsr, &ts_reader::handleTimerSignal);
     connect(tsr, &ts_reader::wasChanged, tcp, &tcpServer::getChanged);
     connect(tsr, &ts_reader::reached_end, &ts_reader::reached_end);
+    rtc->start();
 }
 
 MainWindow::~MainWindow()
@@ -33,7 +39,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::startButtonClick(){
-    qDebug() << "MainWindow::startButtonClick()";
+//    qDebug() << "MainWindow::startButtonClick()";
     tsr->start_ts();
     tmr->start();
 }
@@ -41,7 +47,9 @@ void MainWindow::stopButtonClick(){
     tmr->stop();
     tsr->stop_ts();
 }
-void MainWindow::closeButtonClick(){}
+void MainWindow::closeButtonClick(){
+    this->close();
+}
 void MainWindow::setTimerLabel(){
     secCounter++;
     // Calculate hours, minutes, and seconds
@@ -75,4 +83,9 @@ void MainWindow::setTimerLabel(){
 void MainWindow::reached_end(){
     tmr->stop();
     tsr->stop_ts();
+}
+
+void MainWindow::setRTC() {
+    QDateTime now = watch.get_watch();
+    ui->RTC_label->setText(now.toString("dd.MM.yyyy hh:mm:ss"));
 }

@@ -16,6 +16,10 @@ bool watch_t::get_watch(QDateTime &dt){
     return true;
 }
 
+QDateTime watch_t::get_watch(){
+    return QDateTime::currentDateTime().addSecs(offset);
+}
+
 params::params(QString f_name):
     offsets({0, 0, 0, 0, 0, 0, 0, 0})
     {

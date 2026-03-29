@@ -27,10 +27,12 @@ public:
     void startButtonClick();
     void stopButtonClick();
     void closeButtonClick();
+    void setRTC();
     void setTimerLabel();
     void reached_end();
 private:
     Ui::MainWindow *ui;
+    QTimer *rtc;
     QTimer *tmr;
 public:
 //    ts_readerCSV *tsr;

@@ -407,3 +407,5 @@ h  m  s           dd mm yy
 
 to add lines reading from PostgreSQL.
 qss-stock/
+
+write constractors and destructors, and references

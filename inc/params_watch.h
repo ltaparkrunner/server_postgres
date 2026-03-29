@@ -23,6 +23,7 @@ public:
 
     bool set_watch(QDateTime &dt);
     bool get_watch(QDateTime &dt);
+    QDateTime get_watch();
 private:
 //    date_time tf;
     qint64 offset;

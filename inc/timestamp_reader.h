@@ -23,6 +23,7 @@ public:
 signals:
     void wasChanged(QVector<QString>& vs);
     void reached_end();
+    void tm_timeout();
 protected:
     QTimer *tm1;
     QVector<QString> curValue;

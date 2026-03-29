@@ -4,7 +4,7 @@ ts_readerDB::ts_readerDB(QString &fn, QObject *parent)
     : ts_reader(parent)
 //    ,   model(init_table(this))
 {
-    connect(tm1, &QTimer::timeout, this, &ts_readerDB::readString);
+//    connect(tm1, &QTimer::timeout, this, &ts_reader::readString);
     tm1->setInterval(1000);
 
     QSqlDatabase pgdb = QSqlDatabase::addDatabase("QPSQL");
@@ -57,10 +57,6 @@ QSqlTableModel* ts_readerDB::init_table(QObject *parent){
     } else {
         qDebug() << "Успешное подключение к PostgreSQL!";
     }
-    // getRowByKey(3);
-    // getRowByKey(15);
-    // getRowByKey(260000);
-
     return new QSqlTableModel(parent, pgdb);
 }
 
@@ -74,7 +70,7 @@ int ts_readerDB:: readString() {
         curValue[i] = sr.value(i+1).toString();
     }
 */
-    qDebug() << "ts_readerDB:: readString() curr_row: " << currRow;
+//    qDebug() << "ts_readerDB:: readString() curr_row: " << currRow;
     if(getRowByKey(currRow)) {
         emit wasChanged(curValue);
     }
@@ -89,22 +85,21 @@ int ts_readerDB:: readString() {
 
 int ts_readerDB::getMaxIndex(){
     QSqlQuery query;
-    // Подготавливаем запрос
+    // Preparing a request
     query.prepare("SELECT MAX(row_num) FROM Test");
     if (query.exec()) {
         if (query.next()) {
-            // Получаем данные по именам столбцов или индексам
             if(query.isValid() )
                 return query.value(0).toInt();
             else {
                 return -1;
             }
         } else {
-            qDebug() << "Запись не найдена";
+            qDebug() << "record not found";
             return -1;
         }
     } else {
-        qDebug() << "Ошибка запроса:" << query.lastError().text();
+        qDebug() << "Request error:" << query.lastError().text();
         return -1;
     }
 }
@@ -112,13 +107,13 @@ int ts_readerDB::getMaxIndex(){
 
 bool ts_readerDB::getRowByKey(int key) {
     QSqlQuery query;
-    // Подготавливаем запрос
+    // Preparing a request
     query.prepare("SELECT * FROM Test WHERE row_num = :id");
     query.bindValue(":id", key);
 
     if (query.exec()) {
         if (query.next()) {
-            // Получаем данные по именам столбцов или индексам
+            // Getting data by column names or indexes
             if(query.isValid() )
                 for(int i=0; i<8; i++){
                     // qDebug() << " getRowByKey query the row num: " << key << " the index: "
@@ -130,11 +125,11 @@ bool ts_readerDB::getRowByKey(int key) {
                 return false;
             }
         } else {
-            qDebug() << "Запись не найдена";
+            qDebug() << "record not found";
             return false;
         }
     } else {
-        qDebug() << "Ошибка запроса:" << query.lastError().text();
+        qDebug() << "Request error:" << query.lastError().text();
         return false;
     }
     return true;

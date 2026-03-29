@@ -7,6 +7,7 @@ ts_reader::ts_reader(/*QString &fn, QString &tbln, */ QObject *parent)
     ,   currRow(0)
     ,   maxRow(0)
 {
+    connect(tm1, &QTimer::timeout, this, &ts_reader::readString);
     qDebug() << "ts_reader::ts_reader Constructor";
 }
 
