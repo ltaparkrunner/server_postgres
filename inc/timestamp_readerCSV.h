@@ -9,9 +9,9 @@
 class ts_readerCSV : public ts_reader{
     Q_OBJECT
 public:
-    explicit ts_readerCSV(QString &fn, QObject *parent = nullptr);
+    explicit ts_readerCSV(const QString &fn, QObject *parent = nullptr);
     ~ts_readerCSV();
-
+    int getMaxIndex() override;
     int readString() override;
 private:
     rapidcsv::Document *doc;

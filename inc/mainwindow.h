@@ -48,6 +48,8 @@ private:
     params prm;
     tcpServer *tcp;
     int secCounter;
+    QString testfn;
     QString styleSheetText;
+    bool is_DB;
 };
 #endif // MAINWINDOW_H

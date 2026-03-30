@@ -5,9 +5,8 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w{"../../additional/Test_1.csv", "../../additional/config.ini", ":/addition/additional/Aqua.qss"};
-//    MainWindow w{"..\\additional\\Test_1.csv"};
-//    additional\Test_1.csv
+    MainWindow w{":/addition/additional/Test_1.csv", ":/addition/additional/config.ini", ":/addition/additional/Aqua.qss"};
+
     w.show();
     return a.exec();
 }

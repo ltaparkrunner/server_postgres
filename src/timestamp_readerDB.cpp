@@ -1,9 +1,9 @@
 #include "timestamp_readerDB.h"
 
-ts_readerDB::ts_readerDB(const QString &fn, QObject *parent)
+ts_readerDB::ts_readerDB(QObject *parent)
     : ts_reader(parent)
 {
-    tm1->setInterval(1000);
+//    tm1->setInterval(1000);
     // 1. Creating a database object using the QPSQL driver
     QSqlDatabase pgdb = QSqlDatabase::addDatabase("QPSQL");
 

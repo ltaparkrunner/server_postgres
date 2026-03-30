@@ -10,13 +10,15 @@ MainWindow::MainWindow(const QString& testn, const QString& paramsfn, const QStr
 
 //    , tsr(new ts_readerCSV(fn, this))
 
-    , tsr(new ts_readerDB(testn, this))
+    , tsr(nullptr)
     , watch()
 //    , prm({paramsfn})
     , prm({paramsfn})
     , tcp(new tcpServer(watch, prm, this))
     , secCounter(0)
+    , testfn(testn)
     , styleSheetText(readQss(qssfn))
+    , is_DB(true)
 {
     if (!styleSheetText.isEmpty()) {
         qApp->setStyleSheet(styleSheetText);
@@ -50,6 +52,13 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::startButtonClick(){
+    if(is_DB) {
+        tsr = new ts_readerDB(this);
+    }
+    else {
+        qDebug() << "new ts_readerCSV(testfn, this)";
+        tsr = new ts_readerCSV(testfn, this);
+    }
     tsr->start_ts();
     tmr->start();
     ui->startButton->setEnabled(false);
@@ -120,9 +129,10 @@ void MainWindow::on_actionDB_mode_toggled(bool checked)
 {
     if (checked) {
         ui->actionOpen_test_file->setEnabled(false);
-
+        is_DB = true;
     } else {
         ui->actionOpen_test_file->setEnabled(true);
+        is_DB = false;
     }
 }
 
