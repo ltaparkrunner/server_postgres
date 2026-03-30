@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w{"../../additional/Test_1.csv", "../../additional/config.ini", ":/addition/additional/stylesheet.qss"};
+    MainWindow w{"../../additional/Test_1.csv", "../../additional/config.ini", ":/addition/additional/Aqua.qss"};
 //    MainWindow w{"..\\additional\\Test_1.csv"};
 //    additional\Test_1.csv
     w.show();

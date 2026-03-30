@@ -3,5 +3,6 @@
         <file>additional/config.ini</file>
         <file>additional/stylesheet.qss</file>
         <file>additional/Test_1.csv</file>
+        <file>additional/Aqua.qss</file>
     </qresource>
 </RCC>

@@ -25,6 +25,8 @@ MainWindow::MainWindow(const QString& testn, const QString& paramsfn, const QStr
     setWindowTitle("Test server");
     this->setFixedSize(400, 630);
     this->setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+    ui->actionOpen_test_file->setEnabled(false);
+
     QDateTime now = watch.get_watch();
     ui->RTC_label->setText(now.toString("dd.MM.yyyy hh:mm:ss"));
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::startButtonClick);
@@ -53,6 +55,8 @@ void MainWindow::startButtonClick(){
     tmr->start();
     ui->startButton->setEnabled(false);
     ui->stopButton->setEnabled(true);
+    ui->actionDB_mode->setEnabled(false);
+    ui->actionOpen_test_file->setEnabled(false);
 }
 void MainWindow::stopButtonClick(){
     tmr->stop();
@@ -116,9 +120,9 @@ void MainWindow::on_actionOpen_test_file_triggered()
 void MainWindow::on_actionDB_mode_toggled(bool checked)
 {
     if (checked) {
-        // Галочка поставлена
+        ui->actionOpen_test_file->setEnabled(false);
     } else {
-        // Галочка снята
+        ui->actionOpen_test_file->setEnabled(true);
     }
 }
 
@@ -134,14 +138,14 @@ QString MainWindow::readQss(const QString& qssfn){
 void MainWindow::activateStylesheet(bool dark)
 {
     QStringList lines = styleSheetText.split('\n');
-    const auto removeLine = [dark](const QString &line) {
-        if (line.contains("[DARK]"))
-            return !dark;
-        else if (line.contains("[LIGHT]"))
-            return dark;
-        return false;
-    };
-    lines.erase(std::remove_if(lines.begin(), lines.end(), removeLine), lines.end());
-    // qDebug() << lines;
+    // const auto removeLine = [dark](const QString &line) {
+    //     if (line.contains("[DARK]"))
+    //         return !dark;
+    //     else if (line.contains("[LIGHT]"))
+    //         return dark;
+    //     return false;
+    // };
+    // lines.erase(std::remove_if(lines.begin(), lines.end(), removeLine), lines.end());
+    // // qDebug() << lines;
     qApp->setStyleSheet(lines.join('\n'));
 }
