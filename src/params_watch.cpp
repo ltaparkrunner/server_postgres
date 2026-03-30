@@ -2,7 +2,7 @@
 
 watch_t::watch_t():offset(0)
 {
-//    qDebug() << "watch_t::watch_t Constructor";
+
 }
 watch_t::~watch_t(){}
 bool watch_t::set_watch(QDateTime &dt){
@@ -25,7 +25,7 @@ params::params(QString f_name):
 {
     QFile file(f_name);
     if (!file.exists()) {
-        qDebug() << "Файл не найден:" << f_name;
+        qDebug() << "File not found:" << f_name;
         // message window here
         return;
     }
@@ -131,7 +131,7 @@ params::params(QString f_name):
 void params::get_params(QString f_name){
     QFile file(f_name);
     if (!file.exists()) {
-        qDebug() << "Файл не найден:" << f_name;
+        qDebug() << "File not found:" << f_name;
         // message window here
         return;
     }
@@ -226,7 +226,7 @@ void params::get_params(QString f_name){
 void params::set_params(QString f_name){
     QFile file(f_name);
     if (!file.exists()) {
-        qDebug() << "Файл не найден:" << f_name;
+        qDebug() << "File not found:" << f_name;
         // message window here
         return;
     }

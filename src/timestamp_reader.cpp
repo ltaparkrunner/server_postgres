@@ -9,7 +9,7 @@ ts_reader::ts_reader(/*QString &fn, QString &tbln, */ QObject *parent)
 {
     connect(tm1, &QTimer::timeout, this, &ts_reader::readString);
     tm1->setInterval(1000);
-    qDebug() << "ts_reader::ts_reader Constructor";
+//    qDebug() << "ts_reader::ts_reader Constructor";
 }
 
 ts_reader::~ts_reader() {

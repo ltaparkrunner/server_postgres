@@ -55,7 +55,6 @@ void MainWindow::startButtonClick(){
             tsr = new ts_readerDB(this);
         }
         else{
-            qDebug() << "new ts_readerCSV(testfn, this)";
             tsr = new ts_readerCSV(testfn, this);
         }
         connect(tsr, &ts_reader::wasChanged, tcp, &tcpServer::getChanged);
@@ -123,7 +122,6 @@ void MainWindow::on_actionOpen_test_file_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Open file", "", "csv files (*.csv)");
     if (!fileName.isEmpty()) {
-        qDebug() << "MainWindow::on_actionOpen_test_file_triggered : " << fileName;
         testfn = fileName;
     }
 }

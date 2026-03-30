@@ -5,7 +5,7 @@ tcpServer::tcpServer(watch_t& w, params& p, QObject *parent):QTcpServer(parent)
     , pars(p)
     , ba({16,0})
 {
-//    qDebug() << "tcpServer::tcpServer Constructor start";
+
     if (listen(QHostAddress::Any, 502)) {
         qDebug() << "Server started on port 502";
     }
@@ -17,7 +17,7 @@ void tcpServer::incomingConnection(qintptr socketDescriptor){
     QTcpSocket *socket = new QTcpSocket(this);
 //    socket->setSocketDescriptor(socketDescriptor);
 
-    qDebug() << "New connection attempt, socket descriptor:" << socketDescriptor;
+//    qDebug() << "New connection attempt, socket descriptor:" << socketDescriptor;
 
     if (!socket->setSocketDescriptor(socketDescriptor)) {
         socket->deleteLater();
@@ -39,67 +39,42 @@ void tcpServer::incomingConnection(qintptr socketDescriptor){
         if (request[0] == 1 && request[1] == 1 && request[2] == 0 && request[3] == 0 &&
             request[4] == 0 && request[5] == 6 && request[6] == 33 && request[7] == 3 &&
             request[8] == 0 && request[9] == 0 && request[10] == 0 && request[11] == 16) {
-            qDebug() << "send_mklp_data_time";
             send_mklp_data_time(request, response);
         }
         else if (request[2] == 0 && request[3] == 0 && request[4] == 0 && request[5] > 0 &&
             request[7] == 0x10 && request[9] == 8 && request[11] == 3){
-            qDebug() << "RTC_Time_Install";
             RTC_Time_Install(request, response);
         }
         else if (request[0] == 0x47 && request[1] == 0x42 && request[5] == 0x3e && request[7] == 0x10
             && request[8] == 0 && request[9] == 0x33){
-            qDebug() << "response.size() = " << response.size();
             SetParams(request,  response);
         }
         else if (request[0] == 0x47 && request[1] == 0x42 && request[5] == 6 && request[7] == 3
             && request[8] == 0 && request[9] == 0x33){
-            qDebug() << "send_settings";
             send_settings(request,  response);
         }
         else qDebug() << "all the variants missed";
-        qDebug() << "response.size() = " << response.size();
         socket->write(response);
-        qDebug() << "socket->write(response);";
     });
 
     // --- (Tear down) ---
     connect(socket, &QTcpSocket::disconnected, [socket]() {
-        qDebug() << "Client disconnected:" << socket->peerAddress().toString();
-        // Важно: планируем удаление объекта сокета, чтобы не было утечек памяти
         socket->deleteLater();
     });
-
-    qDebug() << "Connection established with:" << socket->peerAddress().toString();
 }
-
-// uchar hexToBinDecimal(int) {
-//     uchar tmp1, tmp2;
-
-// }
 
 #define TO_BCD(val) (static_cast<uchar>((( (val) / 10) << 4) | ((val) % 10)))
 
 int tcpServer::send_mklp_data_time(QByteArray &request, QByteArray &response){
-    qDebug() << "tcpServer::send_mklp_data_time";
-    qDebug() << "request[11]" << static_cast<int>(request[11]);
     response.resize(2*request[11]+9); // 2*16
-    qDebug() << "response.len" << response.size();
+
     for (uint8_t k = 0;k<8;k++)response[k] = request[k];
     response[5] = 2 * request[11] + 3;
     response[8] = 2 * request[11];
 
-    qDebug() << "response.len" << response.size();
-    // for (uint8_t k=0;k < request[11];k++) {
-    //     {
-    //         QMutexLocker locker(&mx);
-    //         response[2*k + 9] = ba[2*k]; //3;
-    //         response[2*k + 10] = ba[2*k+1]; //3;
-    //     }
         for(int k=0;k<8;k++) {
             QMutexLocker locker(&mx);
             response[2*k + 9] = ba[2*k]; //3;
-            //qDebug()<<"ba["<< 2*k <<"]= " << static_cast<uint>(ba[2*k])<< " ba[" << 2*k+1 << "]= " <<  static_cast<uint>(ba[2*k+1]) ;
             response[2*k + 10] = ba[2*k+1]; //3;
         }
         QDateTime dt;
@@ -113,11 +88,9 @@ int tcpServer::send_mklp_data_time(QByteArray &request, QByteArray &response){
         response[28] = TO_BCD(d.day());
         response[29] = TO_BCD(d.month());
         response[30] = TO_BCD(d.year()%100);
-    qDebug() << "tcpServer::send_mklp_data_time: ";
     return 0;
 }
 int tcpServer::RTC_Time_Install(QByteArray &request, QByteArray &response){
-    qDebug() << "tcpServer::RTC_Time_Install";
     int year = (request[18] >> 4) * 10 + request[18] & 0xf + 100;
     int mon = ((request[17] & 0x1f) >> 4) * 10 + request[17] & 0xf;
     int mday = (request[16] >> 4) * 10 + request[16] & 0xf;
@@ -132,32 +105,22 @@ int tcpServer::RTC_Time_Install(QByteArray &request, QByteArray &response){
     for(int k=0;k<12;k++)
         response[k]=request[k];
         response[5]=6;
-    //     wdata_len=12;
-    // sock_.async_write_some(buffer(write_buffer_, wdata_len),
-    //                        MEM_FN2(on_write, _1, _2));
-
-    qDebug() << "tcpServer::RTC_Time_Install";
     return 0;
 }
 int tcpServer::SetParams(QByteArray &request, QByteArray &response){
-
-//  I need to transmit params to upper level
-    qDebug() << "tcpServer::SetParams 1";
     pars.set_params(request);
-    qDebug() << "tcpServer::SetParams 2";
+
     response.resize(4);
     response[0] = 0;
     response[1] = 'O';
     response[2] = 'K';
     response[3] = '!';
 
-    qDebug() << "tcpServer::SetParams";
+//    qDebug() << "tcpServer::SetParams";
     return 0;
 }
 void tcpServer::send_settings(QByteArray &request, QByteArray &response){
     pars.get_params(response);
-    qDebug() << "tcpServer::send_settings response:" << response;
-//    qDebug() << "tcpServer::send_settings";
 }
 
 void tcpServer::getChanged(QVector<QString>& VS ){

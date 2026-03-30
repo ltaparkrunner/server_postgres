@@ -11,7 +11,7 @@ ts_readerCSV::ts_readerCSV(const QString &fn, QObject *parent)
         // Создаем stringstream для rapidcsv
         std::stringstream sstream(csvData);
 
-        qDebug() << "ts_readerCSV::ts_readerCSV fn: " << fn;
+//        qDebug() << "ts_readerCSV::ts_readerCSV fn: " << fn;
     // //    std::string filename = "../../additional/Test_1.csv";
     //     std::string filename = fn.toStdString();
 

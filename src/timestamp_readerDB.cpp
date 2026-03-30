@@ -22,7 +22,7 @@ ts_readerDB::ts_readerDB(QObject *parent)
     }
 
     maxRow = ts_readerDB::getMaxIndex();
-    qDebug() << "maxRow" << maxRow;
+//    qDebug() << "maxRow" << maxRow;
     ts_readerDB::readString();
 }
 
