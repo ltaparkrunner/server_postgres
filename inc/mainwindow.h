@@ -31,14 +31,14 @@ public:
     void setTimerLabel();
     void reached_end();
     QString readQss(const QString& qssfn);
-    void activateStylesheet(bool dark);
+//    void activateStylesheet(bool dark);
 private:
     Ui::MainWindow *ui;
     QTimer *rtc;
     QTimer *tmr;
 public:
 //    ts_readerCSV *tsr;
-    ts_readerDB *tsr;
+    ts_reader *tsr;
 private slots:
     void on_actionOpen_test_file_triggered();
     void on_actionDB_mode_toggled(bool checked);

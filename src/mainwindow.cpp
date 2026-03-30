@@ -19,7 +19,7 @@ MainWindow::MainWindow(const QString& testn, const QString& paramsfn, const QStr
     , styleSheetText(readQss(qssfn))
 {
     if (!styleSheetText.isEmpty()) {
-        activateStylesheet(true /*dark*/);
+        qApp->setStyleSheet(styleSheetText);
     }
     ui->setupUi(this);
     setWindowTitle("Test server");
@@ -50,7 +50,6 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::startButtonClick(){
-//    qDebug() << "MainWindow::startButtonClick()";
     tsr->start_ts();
     tmr->start();
     ui->startButton->setEnabled(false);
@@ -109,7 +108,7 @@ void MainWindow::setRTC() {
 
 void MainWindow::on_actionOpen_test_file_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Открыть файл", "", "Все файлы (*.*)");
+    QString fileName = QFileDialog::getOpenFileName(this, "Open file", "", "csv files (*.csv)");
     if (!fileName.isEmpty()) {
         // Ваша логика обработки файла
     }
@@ -121,6 +120,7 @@ void MainWindow::on_actionDB_mode_toggled(bool checked)
 {
     if (checked) {
         ui->actionOpen_test_file->setEnabled(false);
+
     } else {
         ui->actionOpen_test_file->setEnabled(true);
     }
@@ -133,19 +133,4 @@ QString MainWindow::readQss(const QString& qssfn){
         return {};
     }
         return QString::fromUtf8(styleSheetFile.readAll());
-}
-
-void MainWindow::activateStylesheet(bool dark)
-{
-    QStringList lines = styleSheetText.split('\n');
-    // const auto removeLine = [dark](const QString &line) {
-    //     if (line.contains("[DARK]"))
-    //         return !dark;
-    //     else if (line.contains("[LIGHT]"))
-    //         return dark;
-    //     return false;
-    // };
-    // lines.erase(std::remove_if(lines.begin(), lines.end(), removeLine), lines.end());
-    // // qDebug() << lines;
-    qApp->setStyleSheet(lines.join('\n'));
 }

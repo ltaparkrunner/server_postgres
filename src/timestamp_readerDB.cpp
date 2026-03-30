@@ -94,9 +94,6 @@ bool ts_readerDB::getRowByKey(int key) {
             // Getting data by column names or indexes
             if(query.isValid() )
                 for(int i=0; i<8; i++){
-                    // qDebug() << " getRowByKey query the row num: " << key << " the index: "
-                    //          << i << "  " << query.value(i).toString();
-                    //qDebug() << "i= " << i;
                     curValue[i] = query.value(i+1).toString();
                 }
             else {  qDebug() << " query is not valid key: " << key;
