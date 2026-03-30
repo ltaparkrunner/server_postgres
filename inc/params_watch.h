@@ -33,15 +33,15 @@ const int num_ch = 8;
 const QString f_name{"config.ini"};
 class params {
 public:
-    //    std::fstream file;
     explicit params(QString f_name);
-//    params* get_params();
+
     void get_params(QString f_name);
     void set_params(QString f_name);
-    bool set_params(QByteArray & req);
     bool get_params(QByteArray & resp);
+    bool set_params(QByteArray & req);
+
     void getIP(QString  str, QHostAddress& addr);
-//    void getIP2(QString str, QHostAddress& addr);
+
 private:
     QHostAddress ip;
     QHostAddress mask;

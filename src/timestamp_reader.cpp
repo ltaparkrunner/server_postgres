@@ -19,3 +19,4 @@ ts_reader::~ts_reader() {
 QVector<QString> ts_reader::ts_reader::get_values(){
     return curValue;
 }
+

@@ -24,6 +24,7 @@ signals:
     void wasChanged(QVector<QString>& vs);
     void reached_end();
     void tm_timeout();
+    void msgStatusbar(const QString& msg);
 protected:
     QTimer *tm1;
     QVector<QString> curValue;

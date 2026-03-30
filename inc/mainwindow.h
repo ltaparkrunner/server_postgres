@@ -37,12 +37,11 @@ private:
     QTimer *rtc;
     QTimer *tmr;
 public:
-//    ts_readerCSV *tsr;
     ts_reader *tsr;
 private slots:
     void on_actionOpen_test_file_triggered();
     void on_actionDB_mode_toggled(bool checked);
-
+    void statusbarMsg(const QString& msg);
 private:
     watch_t watch;
     params prm;
@@ -51,5 +50,6 @@ private:
     QString testfn;
     QString styleSheetText;
     bool is_DB;
+    bool first;
 };
 #endif // MAINWINDOW_H

@@ -19,6 +19,7 @@ MainWindow::MainWindow(const QString& testn, const QString& paramsfn, const QStr
     , testfn(testn)
     , styleSheetText(readQss(qssfn))
     , is_DB(true)
+    , first(true)
 {
     if (!styleSheetText.isEmpty()) {
         qApp->setStyleSheet(styleSheetText);
@@ -34,14 +35,11 @@ MainWindow::MainWindow(const QString& testn, const QString& paramsfn, const QStr
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::startButtonClick);
     connect(ui->stopButton, &QPushButton::clicked, this, &MainWindow::stopButtonClick);
     connect(ui->closeButton, &QPushButton::clicked, this, &MainWindow::closeButtonClick);
-//    connect(this->tsr->getTimer(), &QTimer::timeout, this, &MainWindow::setTimerLabel);
+
     rtc->setInterval(1000);
     tmr->setInterval(1000);
     connect(rtc, &QTimer::timeout, this, &MainWindow::setRTC);
     connect(tmr, &QTimer::timeout, this, &MainWindow::setTimerLabel);
-//    connect(tmr, &QTimer::timeout, tsr, &ts_reader::handleTimerSignal);
-    connect(tsr, &ts_reader::wasChanged, tcp, &tcpServer::getChanged);
-    connect(tsr, &ts_reader::reached_end, &ts_reader::reached_end);
     rtc->start();
     ui->stopButton->setEnabled(false);
 }
@@ -52,12 +50,18 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::startButtonClick(){
-    if(is_DB) {
-        tsr = new ts_readerDB(this);
-    }
-    else {
-        qDebug() << "new ts_readerCSV(testfn, this)";
-        tsr = new ts_readerCSV(testfn, this);
+    if(first){
+        if(is_DB) {
+            tsr = new ts_readerDB(this);
+        }
+        else{
+            qDebug() << "new ts_readerCSV(testfn, this)";
+            tsr = new ts_readerCSV(testfn, this);
+        }
+        connect(tsr, &ts_reader::wasChanged, tcp, &tcpServer::getChanged);
+        connect(tsr, &ts_reader::reached_end, this, &MainWindow::reached_end);
+        connect(tsr, &ts_reader::msgStatusbar, this, &MainWindow::statusbarMsg);
+        first = false;
     }
     tsr->start_ts();
     tmr->start();
@@ -119,7 +123,8 @@ void MainWindow::on_actionOpen_test_file_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Open file", "", "csv files (*.csv)");
     if (!fileName.isEmpty()) {
-        // Ваша логика обработки файла
+        qDebug() << "MainWindow::on_actionOpen_test_file_triggered : " << fileName;
+        testfn = fileName;
     }
 }
 
@@ -143,4 +148,8 @@ QString MainWindow::readQss(const QString& qssfn){
         return {};
     }
         return QString::fromUtf8(styleSheetFile.readAll());
+}
+
+void MainWindow::statusbarMsg(const QString& msg){
+    ui->statusbar->showMessage(msg, 5000);
 }

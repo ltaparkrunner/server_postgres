@@ -5,7 +5,7 @@ tcpServer::tcpServer(watch_t& w, params& p, QObject *parent):QTcpServer(parent)
     , pars(p)
     , ba({16,0})
 {
-    qDebug() << "tcpServer::tcpServer Constructor start";
+//    qDebug() << "tcpServer::tcpServer Constructor start";
     if (listen(QHostAddress::Any, 502)) {
         qDebug() << "Server started on port 502";
     }
