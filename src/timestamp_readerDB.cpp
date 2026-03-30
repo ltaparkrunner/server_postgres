@@ -1,76 +1,55 @@
 #include "timestamp_readerDB.h"
 
-ts_readerDB::ts_readerDB(QString &fn, QObject *parent)
+ts_readerDB::ts_readerDB(const QString &fn, QObject *parent)
     : ts_reader(parent)
-//    ,   model(init_table(this))
 {
-//    connect(tm1, &QTimer::timeout, this, &ts_reader::readString);
     tm1->setInterval(1000);
-
+    // 1. Creating a database object using the QPSQL driver
     QSqlDatabase pgdb = QSqlDatabase::addDatabase("QPSQL");
 
-    // 2. Указываем параметры подключения
-    pgdb.setHostName("localhost");      // Адрес сервера
-    pgdb.setDatabaseName("test_1"); // Имя базы
-    pgdb.setUserName("postgres");       // Логин
-    pgdb.setPassword("Forever");  // Пароль
-    pgdb.setPort(5432);                 // Стандартный порт 5432
+    // 2. Specify connection parameters
+    pgdb.setHostName("localhost");      // server address
+    pgdb.setDatabaseName("test_1"); // Base name
+    pgdb.setUserName("postgres");       // Login
+    pgdb.setPassword("Forever");  // Password
+    pgdb.setPort(5432);                 // Standard port 5432
 
-    // 3. Пытаемся открыть соединение
+    // 3. trying to open a connection
     if (!pgdb.open()) {
-        qDebug() << "Ошибка подключения:" << pgdb.lastError().text();
+        qDebug() << "Connection error:" << pgdb.lastError().text();
     } else {
-        qDebug() << "Успешное подключение к PostgreSQL!";
+        qDebug() << "Successful connection to PostgreSQL!";
     }
 
     maxRow = ts_readerDB::getMaxIndex();
     qDebug() << "maxRow" << maxRow;
-    // model->setTable("test");
-    // model->select();
-    // maxRow = model->rowCount();
-
-    // QSqlRecord sr = model->record(currRow);
-    // curValue.clear();
-    // for(int i=0; i<8; i++){
-    //     curValue.append(sr.value(i+1).toString());
-    // }
-    // qDebug() << "connectToPostgres curValueSQL.count()" << curValue.count();
-
+    ts_readerDB::readString();
 }
 
 ts_readerDB::~ts_readerDB(){}
 
 QSqlTableModel* ts_readerDB::init_table(QObject *parent){
-    // 1. Создаем объект базы данных с драйвером QPSQL
+    // 1. Creating database object with QPSQL driver Создаем объект базы данных с драйвером QPSQL
     QSqlDatabase pgdb = QSqlDatabase::addDatabase("QPSQL");
 
-    // 2. Указываем параметры подключения
-    pgdb.setHostName("localhost");      // Адрес сервера
-    pgdb.setDatabaseName("test_1"); // Имя базы
-    pgdb.setUserName("postgres");       // Логин
-    pgdb.setPassword("Forever");  // Пароль
-    pgdb.setPort(5432);                 // Стандартный порт 5432
+    // 2. Specify connection parameters
+    pgdb.setHostName("localhost");      // server address
+    pgdb.setDatabaseName("test_1"); // database name
+    pgdb.setUserName("postgres");       // Login
+    pgdb.setPassword("Forever");  // Password
+    pgdb.setPort(5432);                 // Standard port 5432
 
-    // 3. Пытаемся открыть соединение
+    // 3. trying to open a connection
     if (!pgdb.open()) {
-        qDebug() << "Ошибка подключения:" << pgdb.lastError().text();
+        qDebug() << "Connection error:" << pgdb.lastError().text();
     } else {
-        qDebug() << "Успешное подключение к PostgreSQL!";
+        qDebug() << "Successful connection to PostgreSQL!";
     }
     return new QSqlTableModel(parent, pgdb);
 }
 
 int ts_readerDB:: readString() {
     if(maxRow > currRow) currRow++;
-/*
-    QSqlRecord sr = model->record(currRow);
-    //  curValue.clear();
-    for(int i=0; i<8; i++){
-        //  curValue.append(sr.value(i+1).toString());
-        curValue[i] = sr.value(i+1).toString();
-    }
-*/
-//    qDebug() << "ts_readerDB:: readString() curr_row: " << currRow;
     if(getRowByKey(currRow)) {
         emit wasChanged(curValue);
     }
@@ -79,7 +58,6 @@ int ts_readerDB:: readString() {
         emit reached_end();
         return -1;
     }
-//    qDebug() << "ts_readerDB:: readString() fin " << currRow;
     return 0;
 }
 

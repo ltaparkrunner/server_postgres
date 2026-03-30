@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/addition">
+        <file>additional/config.ini</file>
+        <file>additional/stylesheet.qss</file>
+        <file>additional/Test_1.csv</file>
+    </qresource>
+</RCC>

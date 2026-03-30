@@ -63,17 +63,7 @@ void tcpServer::incomingConnection(qintptr socketDescriptor){
         qDebug() << "socket->write(response);";
     });
 
-//    connect(socket, &QTcpSocket::disconnected, socket, &QTcpSocket::deleteLater);
-
-    // // --- Установка (Establish) ---
-    // connect(socket, &QTcpSocket::readyRead, [socket]() {
-    //     QByteArray data = socket->readAll();
-    //     qDebug() << "Data received from" << socket->peerAddress().toString() << ":" << data;
-    //     // Эхо-ответ (опционально)
-    //     socket->write("ACK: " + data);
-    // });
-
-    // --- Завершение (Tear down) ---
+    // --- (Tear down) ---
     connect(socket, &QTcpSocket::disconnected, [socket]() {
         qDebug() << "Client disconnected:" << socket->peerAddress().toString();
         // Важно: планируем удаление объекта сокета, чтобы не было утечек памяти
@@ -97,7 +87,7 @@ int tcpServer::send_mklp_data_time(QByteArray &request, QByteArray &response){
     qDebug() << "response.len" << response.size();
     for (uint8_t k = 0;k<8;k++)response[k] = request[k];
     response[5] = 2 * request[11] + 3;
-    response[8] = 2 * request[11];//
+    response[8] = 2 * request[11];
 
     qDebug() << "response.len" << response.size();
     // for (uint8_t k=0;k < request[11];k++) {
@@ -109,7 +99,7 @@ int tcpServer::send_mklp_data_time(QByteArray &request, QByteArray &response){
         for(int k=0;k<8;k++) {
             QMutexLocker locker(&mx);
             response[2*k + 9] = ba[2*k]; //3;
-            qDebug()<<"ba["<< 2*k <<"]= " << static_cast<uint>(ba[2*k])<< " ba[" << 2*k+1 << "]= " <<  static_cast<uint>(ba[2*k+1]) ;
+            //qDebug()<<"ba["<< 2*k <<"]= " << static_cast<uint>(ba[2*k])<< " ba[" << 2*k+1 << "]= " <<  static_cast<uint>(ba[2*k+1]) ;
             response[2*k + 10] = ba[2*k+1]; //3;
         }
         QDateTime dt;

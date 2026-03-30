@@ -1,7 +1,8 @@
 #include "mainwindow.h"
 #include "../forms/ui_mainwindow.h"
+#include <QFileDialog>
 
-MainWindow::MainWindow(QString testn, QString paramsfn, QWidget *parent)
+MainWindow::MainWindow(const QString& testn, const QString& paramsfn, const QString& qssfn, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , rtc(new QTimer(this))
@@ -15,8 +16,15 @@ MainWindow::MainWindow(QString testn, QString paramsfn, QWidget *parent)
     , prm({paramsfn})
     , tcp(new tcpServer(watch, prm, this))
     , secCounter(0)
+    , styleSheetText(readQss(qssfn))
 {
+    if (!styleSheetText.isEmpty()) {
+        activateStylesheet(true /*dark*/);
+    }
     ui->setupUi(this);
+    setWindowTitle("Test server");
+    this->setFixedSize(400, 630);
+    this->setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
     QDateTime now = watch.get_watch();
     ui->RTC_label->setText(now.toString("dd.MM.yyyy hh:mm:ss"));
     connect(ui->startButton, &QPushButton::clicked, this, &MainWindow::startButtonClick);
@@ -31,6 +39,7 @@ MainWindow::MainWindow(QString testn, QString paramsfn, QWidget *parent)
     connect(tsr, &ts_reader::wasChanged, tcp, &tcpServer::getChanged);
     connect(tsr, &ts_reader::reached_end, &ts_reader::reached_end);
     rtc->start();
+    ui->stopButton->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -42,10 +51,14 @@ void MainWindow::startButtonClick(){
 //    qDebug() << "MainWindow::startButtonClick()";
     tsr->start_ts();
     tmr->start();
+    ui->startButton->setEnabled(false);
+    ui->stopButton->setEnabled(true);
 }
 void MainWindow::stopButtonClick(){
     tmr->stop();
     tsr->stop_ts();
+    ui->stopButton->setEnabled(false);
+    ui->startButton->setEnabled(true);
 }
 void MainWindow::closeButtonClick(){
     this->close();
@@ -88,4 +101,47 @@ void MainWindow::reached_end(){
 void MainWindow::setRTC() {
     QDateTime now = watch.get_watch();
     ui->RTC_label->setText(now.toString("dd.MM.yyyy hh:mm:ss"));
+}
+
+void MainWindow::on_actionOpen_test_file_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, "Открыть файл", "", "Все файлы (*.*)");
+    if (!fileName.isEmpty()) {
+        // Ваша логика обработки файла
+    }
+}
+
+
+//void MainWindow::on_actionDB_mode_toggled(bool arg1)
+void MainWindow::on_actionDB_mode_toggled(bool checked)
+{
+    if (checked) {
+        // Галочка поставлена
+    } else {
+        // Галочка снята
+    }
+}
+
+QString MainWindow::readQss(const QString& qssfn){
+    QFile styleSheetFile(qssfn);
+    if (!styleSheetFile.open(QIODevice::ReadOnly)) {
+        qWarning() << "Couldn't find" << styleSheetFile.fileName();
+        return {};
+    }
+        return QString::fromUtf8(styleSheetFile.readAll());
+}
+
+void MainWindow::activateStylesheet(bool dark)
+{
+    QStringList lines = styleSheetText.split('\n');
+    const auto removeLine = [dark](const QString &line) {
+        if (line.contains("[DARK]"))
+            return !dark;
+        else if (line.contains("[LIGHT]"))
+            return dark;
+        return false;
+    };
+    lines.erase(std::remove_if(lines.begin(), lines.end(), removeLine), lines.end());
+    // qDebug() << lines;
+    qApp->setStyleSheet(lines.join('\n'));
 }

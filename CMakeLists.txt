@@ -36,6 +36,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         src/timestamp_reader.cpp
         inc/params_watch.h
         src/params_watch.cpp
+        addition.qrc
 
     )
 # Define target properties for Android with Qt 6 as:

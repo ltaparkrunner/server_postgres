@@ -14,7 +14,7 @@
 class ts_readerDB : public ts_reader{
     Q_OBJECT
 public:
-    explicit ts_readerDB(QString &fn, QObject *parent = nullptr);
+    explicit ts_readerDB(const QString &fn, QObject *parent = nullptr);
     ~ts_readerDB();
     int getMaxIndex() override;
     int readString() override;

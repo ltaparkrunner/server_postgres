@@ -22,7 +22,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    MainWindow(QString testn, QString paramsfn, QWidget *parent = nullptr);
+    MainWindow(const QString& testn, const QString& paramsfn, const QString& qssfn, QWidget *parent = nullptr);
     ~MainWindow();
     void startButtonClick();
     void stopButtonClick();
@@ -30,6 +30,8 @@ public:
     void setRTC();
     void setTimerLabel();
     void reached_end();
+    QString readQss(const QString& qssfn);
+    void activateStylesheet(bool dark);
 private:
     Ui::MainWindow *ui;
     QTimer *rtc;
@@ -37,10 +39,15 @@ private:
 public:
 //    ts_readerCSV *tsr;
     ts_readerDB *tsr;
+private slots:
+    void on_actionOpen_test_file_triggered();
+    void on_actionDB_mode_toggled(bool checked);
+
 private:
     watch_t watch;
     params prm;
     tcpServer *tcp;
     int secCounter;
+    QString styleSheetText;
 };
 #endif // MAINWINDOW_H
