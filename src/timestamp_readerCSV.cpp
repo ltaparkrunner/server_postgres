@@ -38,7 +38,9 @@ ts_readerCSV::ts_readerCSV(const QString &fn, QObject *parent)
     }
 }
 
-ts_readerCSV::~ts_readerCSV(){}
+ts_readerCSV::~ts_readerCSV(){
+    delete doc;
+}
 
 int ts_readerCSV:: readString() {
     if(maxRow > currRow) currRow++;

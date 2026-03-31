@@ -20,8 +20,9 @@ QDateTime watch_t::get_watch(){
     return QDateTime::currentDateTime().addSecs(offset);
 }
 
-params::params(QString f_name):
-    offsets({0, 0, 0, 0, 0, 0, 0, 0})
+params::params(const QString& f_name):
+    fn(f_name)
+,    offsets({0, 0, 0, 0, 0, 0, 0, 0})
 {
     QFile file(f_name);
     if (!file.exists()) {
@@ -128,7 +129,7 @@ params::params(QString f_name):
     err1: qDebug() << "Convertion problem, check file: " << f_name;
 }
 
-void params::get_params(QString f_name){
+void params::get_params(const QString& f_name){
     QFile file(f_name);
     if (!file.exists()) {
         qDebug() << "File not found:" << f_name;
@@ -223,7 +224,7 @@ void params::get_params(QString f_name){
     err2: qDebug() << "Convertion problem, check file: " << f_name;
 }
 
-void params::set_params(QString f_name){
+void params::set_params(const QString& f_name){
     QFile file(f_name);
     if (!file.exists()) {
         qDebug() << "File not found:" << f_name;
@@ -272,7 +273,7 @@ bool params::set_params(QByteArray & req) {
     th.lo_alm = (req[54] << 8) | req[55];
     th.hi_wrn = (req[56] << 8) | req[57];
     th.lo_wrn = (req[58] << 8) | req[59];
-
+    set_params(fn);
     return true;
 }
 

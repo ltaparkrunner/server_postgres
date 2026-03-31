@@ -46,6 +46,9 @@ MainWindow::MainWindow(const QString& testn, const QString& paramsfn, const QStr
 
 MainWindow::~MainWindow()
 {
+    delete tcp;
+    delete tmr;
+    delete rtc;
     delete ui;
 }
 

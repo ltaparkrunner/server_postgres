@@ -28,6 +28,7 @@ ts_readerDB::ts_readerDB(QObject *parent)
 
 ts_readerDB::~ts_readerDB(){}
 
+/*
 QSqlTableModel* ts_readerDB::init_table(QObject *parent){
     // 1. Creating database object with QPSQL driver Создаем объект базы данных с драйвером QPSQL
     QSqlDatabase pgdb = QSqlDatabase::addDatabase("QPSQL");
@@ -47,7 +48,7 @@ QSqlTableModel* ts_readerDB::init_table(QObject *parent){
     }
     return new QSqlTableModel(parent, pgdb);
 }
-
+*/
 int ts_readerDB:: readString() {
     if(maxRow > currRow) currRow++;
     if(getRowByKey(currRow)) {

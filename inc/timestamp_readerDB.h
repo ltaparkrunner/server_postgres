@@ -18,7 +18,7 @@ public:
     ~ts_readerDB();
     int getMaxIndex() override;
     int readString() override;
-    QSqlTableModel* init_table(QObject *parent = nullptr);
+//    QSqlTableModel* init_table(QObject *parent = nullptr);
     bool getRowByKey(int key);
 // signals:
 //     void wasChanged(QVector<QString> vs);
